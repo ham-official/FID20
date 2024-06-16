@@ -43,7 +43,7 @@ contract FRC20 is IFRC20, ERC20, ERC20Burnable, Ownable {
     }
 
     function _update(address from, address to, uint256 value) internal virtual override {
-        /// FID Check
+        // FID Check
         if (FIDOnly) {
             if (!FIDWhitelists[from]) {
                 // Check if from address has a non-zero FID
@@ -67,10 +67,11 @@ contract FRC20 is IFRC20, ERC20, ERC20Burnable, Ownable {
             }
         }
 
-        /// Make sure there is a token balance in the account
+        // Ensure value is not 0
         if (value == 0) {
             revert NoZeroValueTransfers();
         }
+
         // Call the parent contract's _update function
         super._update(from, to, value);
     }
