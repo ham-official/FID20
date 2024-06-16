@@ -1,13 +1,27 @@
+# FRC20 Token Contract
+
+This repo contains an example FRC20 contract. FRC20 tokens are ERC20 tokens that can only be owned and traded by wallets with Farcaster accounts. This is possible on Ham chain where Farcaster ID (FID) to wallet mappings exist natively onchain.
+
+[Learn more](https://docs.ham.fun/docs/farcaster-data) about Ham chain and onchain Farcaster data by reading the docs.
+
+## Running tests
+
+You can run fork tests that interact with a forked version of Ham chain. This ensures that the tests will be able to access onchain FID to wallet mappings.
+
+```
+forge test --fork-url https://rpc.ham.fun --match-path ./test/FRC20.t.sol  -vvv
+```
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
 Foundry consists of:
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
 ## Documentation
 
