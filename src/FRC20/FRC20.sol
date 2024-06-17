@@ -33,13 +33,12 @@
 
 pragma solidity ^0.8.20;
 
-import {IERC20} from "src/FRC20/Extras/IERC20.sol";
+import {IFRC20} from "src/FRC20/Extras/IFRC20.sol";
 import {Context} from "src/FRC20/Extras/Context.sol";
-import {IERC20Metadata} from "src/FRC20/Extras/IERC20Metadata.sol";
 import {IERC20Errors} from "src/FRC20/Extras/IERC20Errors.sol";
 import {IFIDStorage} from "src/interface/IFIDStorage.sol";
 
-abstract contract FRC20 is Context, IERC20, IERC20Metadata, IERC20Errors, IFIDStorage {
+abstract contract FRC20 is Context, IFRC20, IERC20Errors, IFIDStorage {
 
     mapping(address account => uint256) private _balances;
     mapping(address account => mapping(address spender => uint256)) private _allowances;
