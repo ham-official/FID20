@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-/** - FRC20 - Version v1.0 - Developed by Apex777.etg
+/** - FRC20 - Version v1.0 - Developed by Apex777.eth
  * 
  * @dev Modified verion of OpenZepplins ERC20 v5.0.0 to check if an address is 
  * associated with an Farcaster Account through HAM L3's Onchain Farcaster data.
