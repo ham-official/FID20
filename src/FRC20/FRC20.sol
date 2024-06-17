@@ -33,10 +33,10 @@
 
 pragma solidity ^0.8.20;
 
-import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import {Context} from "openzeppelin-contracts/contracts/utils/Context.sol";
-import {IERC20Metadata} from "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import {IERC20Errors} from "lib/openzeppelin-contracts/contracts/interfaces/draft-IERC6093.sol";
+import {IERC20} from "src/FRC20/Extras/IERC20.sol";
+import {Context} from "src/FRC20/Extras/Context.sol";
+import {IERC20Metadata} from "src/FRC20/Extras/IERC20Metadata.sol";
+import {IERC20Errors} from "src/FRC20/Extras/IERC20Errors.sol";
 import {IFIDStorage} from "src/interface/IFIDStorage.sol";
 
 abstract contract FRC20 is Context, IERC20, IERC20Metadata, IERC20Errors, IFIDStorage {
@@ -163,12 +163,8 @@ abstract contract FRC20 is Context, IERC20, IERC20Metadata, IERC20Errors, IFIDSt
      *  Checks if a wallet has been added to the allowlist. 
      * 
      */
-   function isAllowlisted(address wallet) public view returns (bool) {
-        if (_allowlist[wallet] == true){
-            return true;
-        } else {
-            return false;
-        }
+    function isAllowlisted(address wallet) public view returns (bool) {
+        return _allowlist[wallet];
     }
 
     /**
