@@ -27,6 +27,7 @@
  * 
  *  - _allowTransfer - Internal function using the above functions to check if a transfer should happen
  * 
+ *  - _setAllowlist  - Internal function to add wallets to the allowlist mapping
  * 
  */
 
@@ -63,6 +64,9 @@ abstract contract FRC20 is Context, IERC20, IERC20Metadata, IERC20Errors, IFIDSt
         _name = name_;
         _symbol = symbol_;
         _fidStorage = IFIDStorage(fidContract_);
+
+        // 0x0 address needs to be on allowlist for mints and burns
+        _setAllowlist(address(0), true); 
     }
 
     /**
@@ -166,6 +170,17 @@ abstract contract FRC20 is Context, IERC20, IERC20Metadata, IERC20Errors, IFIDSt
             return false;
         }
     }
+
+    /**
+     * @dev FRC20 custom logic
+     * 
+     *  Internal function to set wallets on the Allowlist
+     * 
+     */
+    function _setAllowlist(address _address, bool _allowed) internal {
+        _allowlist[_address] = _allowed;
+    }
+
 
     /**
      * @dev FRC20 custom logic
