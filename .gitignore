@@ -12,3 +12,6 @@ docs/
 
 # Dotenv file
 .env
+/.states
+/src/FRC20/artifacts
+/src/artifacts
