@@ -6,7 +6,7 @@ pragma solidity ^0.8.20;
  * @dev Standard ERC20 Errors
  * Interface of the https://eips.ethereum.org/EIPS/eip-6093[ERC-6093] custom errors for ERC20 tokens.
  */
-interface IFRC20Errors {
+interface IFID20Errors {
     /**
      * @dev Indicates an error related to the current `balance` of a `sender`. Used in transfers.
      * @param sender Address whose tokens are being transferred.

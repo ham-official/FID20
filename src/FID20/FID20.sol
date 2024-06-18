@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 
 /**
- * - FRC20 - Version v1.0 - Developed by Apex777.eth
+ * - FID20 - Version v1.0 - Developed by Apex777.eth
  *
  * @dev Modified verion of OpenZepplins ERC20 v5.0.0 to check if an address is
  * associated with an Farcaster Account through HAM L3's Onchain Farcaster data.
  *
  *
- * Changes for FRC20
+ * Changes for FID20
  * ----------------------
  *
  *  --- Variables ---
@@ -33,13 +33,13 @@
  */
 pragma solidity ^0.8.20;
 
-import {IFRC20} from "src/interface/IFRC20.sol";
-import {IFRC20Metadata} from "src/interface/IFRC20Metadata.sol";
+import {IFID20} from "src/interface/IFID20.sol";
+import {IFID20Metadata} from "src/interface/IFID20Metadata.sol";
 import {Context} from "lib/openzeppelin-contracts/contracts/utils/Context.sol";
-import {IFRC20Errors} from "src/interface/IFRC20Errors.sol";
+import {IFID20Errors} from "src/interface/IFID20Errors.sol";
 import {IFIDStorage} from "src/interface/IFIDStorage.sol";
 
-abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
+abstract contract FID20 is Context, IFID20, IFID20Metadata, IFID20Errors {
     mapping(address account => uint256) private _balances;
     mapping(address account => mapping(address spender => uint256)) private _allowances;
 
@@ -48,11 +48,11 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
     string private _name;
     string private _symbol;
 
-    /// FRC Custom Variables
+    /// FID Custom Variables
     IFIDStorage private _fidStorage;
     mapping(address => bool) private _allowlist;
 
-    error FRC20InvalidTransfer(string message, address attemptedAddress);
+    error FID20InvalidTransfer(string message, address attemptedAddress);
 
     /**
      * @dev Sets the values for {name} and {symbol}.
@@ -201,14 +201,14 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
      * this function.
      *
      *
-     * --- FRC20 Custom logic added ---
-     *  Hook into _frc20Checks added
-     * --- FRC20 Custom logic added ---
+     * --- FID20 Custom logic added ---
+     *  Hook into _FID20Checks added
+     * --- FID20 Custom logic added ---
      *
      * Emits a {Transfer} event.
      */
     function _update(address from, address to, uint256 value) internal virtual {
-        // hook for FRC20 custom logic
+        // hook for FID20 custom logic
         _allowTransfer(from, to);
 
         if (from == address(0)) {
@@ -340,7 +340,7 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
     }
 
     /**
-     * @dev FRC20 custom logic
+     * @dev FID20 custom logic
      *
      *  Call the external FIDStorage contract to see if wallet has
      *  been linked to a Farcaster account.
@@ -361,7 +361,7 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
     }
 
     /**
-     * @dev FRC20 custom logic
+     * @dev FID20 custom logic
      *
      *  Checks if a wallet has been added to the allowlist.
      *
@@ -371,7 +371,7 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
     }
 
     /**
-     * @dev FRC20 custom logic
+     * @dev FID20 custom logic
      *
      *  Internal function to set wallets on the Allowlist
      *
@@ -381,7 +381,7 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
     }
 
     /**
-     * @dev FRC20 custom logic
+     * @dev FID20 custom logic
      *
      *    Hook called in _update (standard erc20 function)
      *  ---------------------------
@@ -400,12 +400,12 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
 
         // check from
         if (!isFromOnAllowlist && !isFromFID) {
-            revert FRC20InvalidTransfer("Transfers can only be made from Farcaster or allowlist addresses", from);
+            revert FID20InvalidTransfer("Transfers can only be made from Farcaster or allowlist addresses", from);
         }
 
         // check to
         if (!isToOnAllowlist && !isToFID) {
-            revert FRC20InvalidTransfer("Transfers can only be made to Farcaster or allowlist addresses", from);
+            revert FID20InvalidTransfer("Transfers can only be made to Farcaster or allowlist addresses", from);
         }
     }
 }

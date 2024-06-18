@@ -3,12 +3,12 @@
 
 pragma solidity ^0.8.20;
 
-import {IFRC20} from "src/interface/IFRC20.sol";
+import {IFID20} from "src/interface/IFID20.sol";
 
 /**
  * @dev Interface for the optional metadata functions from the ERC20 standard.
  */
-interface IFRC20Metadata is IFRC20 {
+interface IFID20Metadata is IFID20 {
     /**
      * @dev Returns the name of the token.
      */
