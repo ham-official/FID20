@@ -1,36 +1,36 @@
 // SPDX-License-Identifier: MIT
 
-/** - FRC20 - Version v1.0 - Developed by Apex777.eth
- * 
- * @dev Modified verion of OpenZepplins ERC20 v5.0.0 to check if an address is 
+/**
+ * - FRC20 - Version v1.0 - Developed by Apex777.eth
+ *
+ * @dev Modified verion of OpenZepplins ERC20 v5.0.0 to check if an address is
  * associated with an Farcaster Account through HAM L3's Onchain Farcaster data.
- * 
- * 
+ *
+ *
  * Changes for FRC20
  * ----------------------
- * 
- *  --- Variables --- 
- * 
+ *
+ *  --- Variables ---
+ *
  * - Add a new instance of the FIDStorage
- * 
+ *
  * - Create an allowlist mapping to store addresses that won't have a Farcaster account
  *   but need access to tokens, pools, smart contracts, uniswap routers etc...
- * 
+ *
  * - Custom error for invalid transfers not allowlisted or Farcaster accounts
  *
  *
- *  --- Functions --- 
- * 
+ *  --- Functions ---
+ *
  *  - isFIDWallet    - Public function to check if a wallet is a Farcaster account
- * 
+ *
  *  - isAllowlisted  - Public function to check if a wallet is on the allowlist
- * 
+ *
  *  - _allowTransfer - Internal function using the above functions to check if a transfer should happen
- * 
+ *
  *  - _setAllowlist  - Internal function to add wallets to the allowlist mapping
- * 
+ *
  */
-
 pragma solidity ^0.8.20;
 
 import {IFRC20} from "src/interface/IFRC20.sol";
@@ -39,10 +39,8 @@ import {Context} from "lib/openzeppelin-contracts/contracts/utils/Context.sol";
 import {IFRC20Errors} from "src/interface/IFRC20Errors.sol";
 import {IFIDStorage} from "src/interface/IFIDStorage.sol";
 
-
 abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
-
-   mapping(address account => uint256) private _balances;
+    mapping(address account => uint256) private _balances;
     mapping(address account => mapping(address spender => uint256)) private _allowances;
 
     uint256 private _totalSupply;
@@ -53,6 +51,7 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
     /// FRC Custom Variables
     IFIDStorage private _fidStorage;
     mapping(address => bool) private _allowlist;
+
     error FRC20InvalidTransfer(string message, address attemptedAddress);
 
     /**
@@ -67,7 +66,7 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
         _fidStorage = IFIDStorage(fidContract_);
 
         // 0x0 address needs to be on allowlist for mints and burns
-        _setAllowlist(address(0), true); 
+        _setAllowlist(address(0), true);
     }
 
     /**
@@ -138,80 +137,6 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
     }
 
     /**
-     * @dev FRC20 custom logic
-     * 
-     *  Call the external FIDStorage contract to see if wallet has
-     *  been linked to a Farcaster account. 
-     *  If an account is found, a value other than zero is returned. 
-     *  This is called in a try catch block as it's an external contract.
-     * 
-     */
-   function isFIDWallet(address wallet) public view returns (bool) {
-        try _fidStorage.ownerFid(wallet) returns (uint256 fid) {
-            if(fid != 0){
-                return true;
-            } else {
-                return false;
-            }
-        } catch  {
-            return false;
-        }
-    }
-
-    /**
-     * @dev FRC20 custom logic
-     * 
-     *  Checks if a wallet has been added to the allowlist. 
-     * 
-     */
-    function isAllowlisted(address wallet) public view returns (bool) {
-        return _allowlist[wallet];
-    }
-
-    /**
-     * @dev FRC20 custom logic
-     * 
-     *  Internal function to set wallets on the Allowlist
-     * 
-     */
-    function _setAllowlist(address _address, bool _allowed) internal {
-        _allowlist[_address] = _allowed;
-    }
-
-
-    /**
-     * @dev FRC20 custom logic
-     * 
-     *    Hook called in _update (standard erc20 function)
-     *  ---------------------------
-     *  Tokens can only be transferred to and from either a wallet that
-     *  has a Farcaster account or wallets that have been added to
-     *  the allowlist mapping.
-     * 
-     * 
-     */
-    function _allowTransfer(address to, address from) internal view {
-
-        bool isFromOnAllowlist = isAllowlisted(from);
-        bool isFromFID = isFIDWallet(from);
-
-        bool isToOnAllowlist = isAllowlisted(to);
-        bool isToFID = isFIDWallet(to);
-
-        // check from
-        if (!isFromOnAllowlist && !isFromFID) {
-            revert FRC20InvalidTransfer("Transfers can only be made from Farcaster or allowlist addresses", from);
-        }
-
-        // check to
-        if (!isToOnAllowlist && !isToFID) {
-            revert FRC20InvalidTransfer("Transfers can only be made to Farcaster or allowlist addresses", from);
-        }
-
-    }
-
-
-    /**
      * @dev See {IERC20-approve}.
      *
      * NOTE: If `value` is the maximum `uint256`, the allowance is not updated on
@@ -274,8 +199,8 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
      * @dev Transfers a `value` amount of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
      * (or `to`) is the zero address. All customizations to transfers, mints, and burns should be done by overriding
      * this function.
-     * 
-     * 
+     *
+     *
      * --- FRC20 Custom logic added ---
      *  Hook into _frc20Checks added
      * --- FRC20 Custom logic added ---
@@ -283,9 +208,8 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
      * Emits a {Transfer} event.
      */
     function _update(address from, address to, uint256 value) internal virtual {
-
         // hook for FRC20 custom logic
-        _allowTransfer(from,to);
+        _allowTransfer(from, to);
 
         if (from == address(0)) {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
@@ -415,4 +339,73 @@ abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
         }
     }
 
+    /**
+     * @dev FRC20 custom logic
+     *
+     *  Call the external FIDStorage contract to see if wallet has
+     *  been linked to a Farcaster account.
+     *  If an account is found, a value other than zero is returned.
+     *  This is called in a try catch block as it's an external contract.
+     *
+     */
+    function isFIDWallet(address wallet) public view returns (bool) {
+        try _fidStorage.ownerFid(wallet) returns (uint256 fid) {
+            if (fid != 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * @dev FRC20 custom logic
+     *
+     *  Checks if a wallet has been added to the allowlist.
+     *
+     */
+    function isAllowlisted(address wallet) public view returns (bool) {
+        return _allowlist[wallet];
+    }
+
+    /**
+     * @dev FRC20 custom logic
+     *
+     *  Internal function to set wallets on the Allowlist
+     *
+     */
+    function _setAllowlist(address _address, bool _allowed) internal {
+        _allowlist[_address] = _allowed;
+    }
+
+    /**
+     * @dev FRC20 custom logic
+     *
+     *    Hook called in _update (standard erc20 function)
+     *  ---------------------------
+     *  Tokens can only be transferred to and from either a wallet that
+     *  has a Farcaster account or wallets that have been added to
+     *  the allowlist mapping.
+     *
+     *
+     */
+    function _allowTransfer(address to, address from) internal view {
+        bool isFromOnAllowlist = isAllowlisted(from);
+        bool isFromFID = isFIDWallet(from);
+
+        bool isToOnAllowlist = isAllowlisted(to);
+        bool isToFID = isFIDWallet(to);
+
+        // check from
+        if (!isFromOnAllowlist && !isFromFID) {
+            revert FRC20InvalidTransfer("Transfers can only be made from Farcaster or allowlist addresses", from);
+        }
+
+        // check to
+        if (!isToOnAllowlist && !isToFID) {
+            revert FRC20InvalidTransfer("Transfers can only be made to Farcaster or allowlist addresses", from);
+        }
+    }
 }
