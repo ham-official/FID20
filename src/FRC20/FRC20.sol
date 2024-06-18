@@ -33,14 +33,14 @@
 
 pragma solidity ^0.8.20;
 
-import {IERC20} from "./IERC20.sol";
-import {IERC20Metadata} from "./IERC20Metadata.sol";
-import {Context} from "./Context.sol";
-import {IERC20Errors} from "./draft-IERC6093.sol";
+import {IFRC20} from "src/interface/IFRC20.sol";
+import {IFRC20Metadata} from "src/interface/IFRC20Metadata.sol";
+import {Context} from "lib/openzeppelin-contracts/contracts/utils/Context.sol";
+import {IFRC20Errors} from "src/interface/IFRC20Errors.sol";
 import {IFIDStorage} from "src/interface/IFIDStorage.sol";
 
 
-abstract contract FRC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
+abstract contract FRC20 is Context, IFRC20, IFRC20Metadata, IFRC20Errors {
 
    mapping(address account => uint256) private _balances;
     mapping(address account => mapping(address spender => uint256)) private _allowances;
