@@ -3,32 +3,34 @@
 /**
  * - FID20 - Version v1.0 - Developed by Apex777.eth
  *
- * @dev Modified verion of OpenZepplins ERC20 v5.0.0 to check if an address is
- * associated with an Farcaster Account through HAM L3's Onchain Farcaster data.
- *
+ * @dev Modified version of OpenZeppelin's ERC20 v5.0.0 to check if an address is
+ * associated with a Farcaster account through HAM L3's Onchain Farcaster data.
  *
  * Changes for FID20
- * ----------------------
+ * -----------------
  *
  *  --- Variables ---
  *
- * - Add a new instance of the FIDStorage
+ * - Add a new instance of the FIDStorage contract.
  *
- * - Create an allowlist mapping to store addresses that won't have a Farcaster account
- *   but need access to tokens, pools, smart contracts, uniswap routers etc...
+ * - Create an allowlist mapping to store addresses that do not have a Farcaster account
+ *   but need access to tokens, pools, smart contracts, Uniswap routers, etc.
  *
- * - Custom error for invalid transfers not allowlisted or Farcaster accounts
- *
+ * - Custom error for invalid transfers involving addresses not on the allowlist or
+ *   not associated with Farcaster accounts.
  *
  *  --- Functions ---
  *
- *  - isFIDWallet    - Public function to check if a wallet is a Farcaster account
+ *  - isFIDWallet    - Public function to check if a wallet is associated with a Farcaster account.
  *
- *  - isAllowlisted  - Public function to check if a wallet is on the allowlist
+ *  - isAllowlisted  - Public function to check if a wallet is on the allowlist.
  *
- *  - _allowTransfer - Internal function using the above functions to check if a transfer should happen
+ *  - _allowTransfer - Internal function that uses the above functions to check if a transfer should occur.
  *
- *  - _setAllowlist  - Internal function to add wallets to the allowlist mapping
+ *  - _setAllowlist  - Internal function to add wallets to the allowlist mapping.
+ *
+ *  - setAllowlist   - Abstract function to be implemented by derived contracts to manage the allowlist.
+ *                     See method comments for more details.
  *
  */
 pragma solidity ^0.8.20;
@@ -52,7 +54,7 @@ abstract contract FID20 is Context, IFID20, IFID20Metadata, IFID20Errors {
     IFIDStorage private _fidStorage;
     mapping(address => bool) private _allowlist;
 
-    error FID20InvalidTransfer(string message, address attemptedAddress);
+    error FID20InvalidTransfer(address attemptedAddress);
 
     /**
      * @dev Sets the values for {name} and {symbol}.
@@ -342,11 +344,17 @@ abstract contract FID20 is Context, IFID20, IFID20Metadata, IFID20Errors {
     /**
      * @dev FID20 custom logic
      *
-     *  Call the external FIDStorage contract to see if wallet has
-     *  been linked to a Farcaster account.
-     *  If an account is found, a value other than zero is returned.
-     *  This is called in a try catch block as it's an external contract.
+     *  Public function to check if a wallet is linked to a Farcaster account
+     *  ---------------------------------------------------------------------
+     *  This function calls the external FIDStorage contract to determine if the
+     *  specified wallet address has been linked to a Farcaster account. If an
+     *  account is found, a non-zero value is returned.
      *
+     *  The function uses a try-catch block to handle potential errors from the
+     *  external contract call.
+     *
+     *  @param wallet The address to check for Farcaster account linkage
+     *  @return bool Returns true if the wallet is linked to a Farcaster account, otherwise false
      */
     function isFIDWallet(address wallet) public view returns (bool) {
         try _fidStorage.ownerFid(wallet) returns (uint256 fid) {
@@ -363,8 +371,13 @@ abstract contract FID20 is Context, IFID20, IFID20Metadata, IFID20Errors {
     /**
      * @dev FID20 custom logic
      *
-     *  Checks if a wallet has been added to the allowlist.
+     *  Public function to check Allowlist status
+     *  -----------------------------------------
+     *  This function checks if a given wallet address has been added to the allowlist.
+     *  The allowlist determines if a wallet is permitted to send or receive tokens.
      *
+     *  @param wallet The address to check for allowlist status
+     *  @return bool Returns true if the wallet is on the allowlist, otherwise false
      */
     function isAllowlisted(address wallet) public view returns (bool) {
         return _allowlist[wallet];
@@ -373,8 +386,13 @@ abstract contract FID20 is Context, IFID20, IFID20Metadata, IFID20Errors {
     /**
      * @dev FID20 custom logic
      *
-     *  Internal function to set wallets on the Allowlist
+     *  Internal function to manage the Allowlist
+     *  -----------------------------------------
+     *  This function allows adding or removing addresses from the allowlist,
+     *  which determines if a wallet can send or receive tokens.
      *
+     *  @param _address The address to be added or removed from the allowlist
+     *  @param _allowed Boolean indicating whether the address should be added (true) or removed (false) from the allowlist
      */
     function _setAllowlist(address _address, bool _allowed) internal {
         _allowlist[_address] = _allowed;
@@ -383,13 +401,20 @@ abstract contract FID20 is Context, IFID20, IFID20Metadata, IFID20Errors {
     /**
      * @dev FID20 custom logic
      *
-     *    Hook called in _update (standard erc20 function)
-     *  ---------------------------
-     *  Tokens can only be transferred to and from either a wallet that
-     *  has a Farcaster account or wallets that have been added to
-     *  the allowlist mapping.
+     *  Hook called in the standard ERC20 `_update` function
+     *  ------------------------------------------------------
+     *  Ensures tokens can only be transferred to and from wallets that
+     *  are either associated with a Farcaster account or have been added
+     *  to the allowlist mapping.
      *
+     *  This function performs the following checks:
+     *  - Verifies if the `from` address is either on the allowlist or associated with a Farcaster account.
+     *  - Verifies if the `to` address is either on the allowlist or associated with a Farcaster account.
      *
+     *  If any of these checks fail, the transfer is reverted with a custom error.
+     *
+     *  @param to The address to which tokens are being transferred
+     *  @param from The address from which tokens are being transferred
      */
     function _allowTransfer(address to, address from) internal view {
         bool isFromOnAllowlist = isAllowlisted(from);
@@ -400,12 +425,26 @@ abstract contract FID20 is Context, IFID20, IFID20Metadata, IFID20Errors {
 
         // check from
         if (!isFromOnAllowlist && !isFromFID) {
-            revert FID20InvalidTransfer("Transfers can only be made from Farcaster or allowlist addresses", from);
+            revert FID20InvalidTransfer(from);
         }
 
         // check to
         if (!isToOnAllowlist && !isToFID) {
-            revert FID20InvalidTransfer("Transfers can only be made to Farcaster or allowlist addresses", from);
+            revert FID20InvalidTransfer(to);
         }
     }
+
+    /**
+     * @dev FID20 custom logic
+     *
+     *  Abstract function to set wallets on the Allowlist
+     *  -------------------------------------------------
+     *  Any contract inheriting FID20 must implement this function to allow
+     *  adding or removing addresses from the allowlist. This function should
+     *  be restricted to the contract owner or an authorized entity.
+     *
+     *  @param _address The address to be added or removed from the allowlist
+     *  @param _allowed Boolean indicating whether the address is allowed or not
+     */
+    function setAllowlist(address _address, bool _allowed) public virtual;
 }

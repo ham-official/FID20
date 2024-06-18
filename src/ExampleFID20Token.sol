@@ -9,14 +9,14 @@ contract ExampleFID20Token is FID20, Ownable {
     address public fidStorageAddress = 0xCca2e3e860079998622868843c9A00dEbb591D30;
 
     /// Token Details
-    uint256 public immutable MAX_SUPPLY = 777777777 ether;
+    uint256 public immutable MAX_SUPPLY = 5000 ether;
 
     constructor() FID20("Example FID Token", "FID20", fidStorageAddress) Ownable(msg.sender) {
         _setAllowlist(msg.sender, true); // Whitelist the deployer
         _mint(msg.sender, MAX_SUPPLY);
     }
 
-    function setAllowlist(address _address, bool _allowed) public onlyOwner {
+    function setAllowlist(address _address, bool _allowed) public override onlyOwner {
         _setAllowlist(_address, _allowed);
     }
 }
