@@ -1,82 +1,37 @@
 # FID20 Token Contract
 
-This repo contains an example FID20 contract. FID20 tokens are ERC20 tokens that can only be owned and traded by wallets with Farcaster accounts. This is possible on Ham chain where Farcaster ID (FID) to wallet mappings exist natively onchain.
+**Version 1.0.0**
 
-[Learn more](https://docs.ham.fun/docs/farcaster-data) about Ham chain and onchain Farcaster data by reading the docs.
+This repository contains an example FID20 contract. FID20 tokens are ERC20 tokens that can only be owned and traded by wallets with Farcaster accounts. This is possible on the Ham chain where Farcaster ID (FID) to wallet mappings exist natively onchain.
+
+[Learn more](https://docs.ham.fun/docs/farcaster-data) about the Ham chain and onchain Farcaster data by reading the docs.
 
 ![Ham Logo](https://ham.fun/ham-icon.svg)
 
-## Running tests
+## What is FID20?
 
-You can run fork tests that interact with a forked version of Ham chain. This ensures that the tests will be able to access onchain FID to wallet mappings.
+The FID20 standard is an extension of the ERC20 token standard. It introduces additional functionality to ensure that tokens can only be transferred to and from wallets associated with Farcaster accounts. This functionality is facilitated by the Ham chain, which provides native onchain mappings between Farcaster IDs and wallet addresses.
 
-```
-forge test --fork-url https://rpc.ham.fun --match-path ./test/FID20.t.sol  -vvv
-```
+### Key Features:
+- **Restricted Transfers**: Tokens can only be transferred to addresses that have associated Farcaster accounts.
+- **Allowlist**: An allowlist mechanism is provided to permit specific addresses, such as smart contracts, to interact with the tokens even if they don't have a Farcaster account.
 
-## Foundry
+### Who Created FID20?
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+The FID20 standard was developed by apex777.eth. The aim is to provide a more secure and accountable way to manage token transfers, leveraging the Farcaster network.
 
-Foundry consists of:
+## Example Token
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Included in this repository is an example implementation of the FID20 standard in the form of a "memecoin" style token. This token serves as an educational resource to help developers understand how to implement and use the FID20 standard.
 
-## Documentation
+### Token Details:
+- **Name**: Example FID20 Token
+- **Ticker**: FID20
+- **Max Supply**: 100,000,000 tokens
 
-https://book.getfoundry.sh/
+## Running Tests
 
-## Usage
+You can run fork tests that interact with a forked version of the Ham chain. This ensures that the tests will be able to access onchain FID to wallet mappings.
 
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+```sh
+forge test --fork-url https://rpc.ham.fun --match-path ./test/FID20.t.sol -vvv

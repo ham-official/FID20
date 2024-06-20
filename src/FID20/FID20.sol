@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 /**
- * - FID20 - Version v1.0 - Developed by Apex777.eth
+ * - FID20 - Version v1.0.0 - Developed by Apex777.eth
  *
  * @dev Modified version of OpenZeppelin's ERC20 v5.0.0 to check if an address is
  * associated with a Farcaster account through HAM L3's Onchain Farcaster data.
