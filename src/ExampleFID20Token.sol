@@ -2,22 +2,22 @@
 /**
  * @title Example FID20 Token
  * @dev An example implementation of the FID20 standard for a "memecoin" style token.
- * This contract demonstrates how to use the FID20 standard, highlighting the key 
- * differences and additional requirements compared to the ERC20 standard. For more 
+ * This contract demonstrates how to use the FID20 standard, highlighting the key
+ * differences and additional requirements compared to the ERC20 standard. For more
  * details on FID20, please refer to the comments in FID20.sol in the repository.
  *
  * Requirements / Usage Compared to ERC20:
  * ----------------------------------------
- * - The FID20 instance in the constructor requires an additional parameter compared 
- *   to the ERC20 standard. This parameter is the FIDStorage address on HAM L3, which 
+ * - The FID20 instance in the constructor requires an additional parameter compared
+ *   to the ERC20 standard. This parameter is the FIDStorage address on HAM L3, which
  *   is necessary to ensure that swaps are only allowed to FID wallets.
  *
- * - The `setAllowlist` function must be overridden in any contracts that inherit 
- *   from FID20. This function enables the contract owner to manage an allowlist, 
- *   permitting addresses such as routers, pools, and other smart contracts to 
+ * - The `setAllowlist` function must be overridden in any contracts that inherit
+ *   from FID20. This function enables the contract owner to manage an allowlist,
+ *   permitting addresses such as routers, pools, and other smart contracts to
  *   interact with your token.
  *
- * This token serves as an example to help developers learn how to implement and 
+ * This token serves as an example to help developers learn how to implement and
  * use the FID20 standard.
  */
 pragma solidity ^0.8.20;
