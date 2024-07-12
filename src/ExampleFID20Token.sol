@@ -17,6 +17,12 @@
  *   permitting addresses such as routers, pools, and other smart contracts to
  *   interact with your token.
  *
+ * - The `_allowlistProxySwap` function is added to allow the contract owner to manage
+ *   a list of specific addresses that need to be allowlisted to facilitate trading.
+ *   These addresses include key contracts such as the WETH on HAM, Proxyswap Router,
+ *   Factory, Position, Quoter, and Fees Contracts. This is essential for enabling
+ *   trading functionality.
+ *
  * This token serves as an example to help developers learn how to implement and
  * use the FID20 standard.
  */
@@ -39,9 +45,30 @@ contract ExampleFID20Token is FID20, Ownable {
         _setAllowlist(msg.sender, true);
         // mint total supply during deployment
         _mint(msg.sender, MAX_SUPPLY);
+
+        // allowlist ProxySwap addresses to enable trading
+        _allowlistProxySwap();
     }
 
-    // function to allow the contract owner to allowlist addresses
+    /**
+     * @dev Internal function to allowlist specific ProxySwap addresses necessary for trading.
+     * This includes WETH on HAM, Proxyswap Router, Factory, Position, Quoter, and Fees Contracts.
+     */
+    function _allowlistProxySwap() internal {
+        _setAllowlist(0x4200000000000000000000000000000000000006, true); // WETH address on Ham L3
+        _setAllowlist(0x04f9bf41572550E4F51fD9e595446d235e733C16, true); // Proxyswap Router Contract
+        _setAllowlist(0x6bA5888ACa5CfAebdF3c9ace64581c3Aa86e564c, true); // Proxyswap factory Contract
+        _setAllowlist(0xD088322Fa988225B3936555894E1D21c1A727859, true); // Proxyswap Position Contract
+        _setAllowlist(0xe1ce80a0Ef61867b475048867f59306480e0aE0E, true); // Proxyswap Quoter Contract
+        _setAllowlist(0x053707B201385AE3421D450A1FF272952D2D6971, true); // Proxyswap Fees Contract
+    }
+
+    /**
+     * @dev Function to allow the contract owner to manage the allowlist.
+     * This enables the owner to permit addresses that do not have an FID address to interact with the token.
+     * @param _address The address to be allowlisted or removed from the allowlist.
+     * @param _allowed Boolean indicating whether the address should be allowed or not.
+     */
     function setAllowlist(address _address, bool _allowed) public override onlyOwner {
         _setAllowlist(_address, _allowed);
     }
