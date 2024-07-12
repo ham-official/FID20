@@ -31,23 +31,46 @@ pragma solidity ^0.8.20;
 import {FID20} from "src/FID20/FID20.sol";
 import {Ownable} from "lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
+// Interface for the Uniswap V3 Factory contract
+interface IUniswapV3Factory {
+    function createPool(address tokenA, address tokenB, uint24 fee) external returns (address pool);
+}
+
 contract ExampleFID20Token is FID20, Ownable {
     // FID Contract Address on HAM L3
     address public fidStorageAddress = 0xCca2e3e860079998622868843c9A00dEbb591D30;
+
+    // Uniswap V3 Factory Contract Address
+    address public proxySwapFactory = 0x6bA5888ACa5CfAebdF3c9ace64581c3Aa86e564c;
+
+    // WETH Address on HAM L3
+    address public wETH = 0x4200000000000000000000000000000000000006;
 
     // Example token details
     string private tokenName = "Example FIC20 Token";
     string private tokenTicker = "FID20";
     uint256 public immutable MAX_SUPPLY = 100_000_000 ether;
+    // Hardcoded fee of 1% (10000 basis points)
+    uint24 public constant FEE_1_PERCENT = 10000;
 
+    /**
+     * @dev Constructor that initializes the FID20 token and mints the total supply to the deployer.
+     * It also sets up the allowlist for ProxySwap addresses and creates a Uniswap V3 pool for the token.
+     */
     constructor() FID20(tokenName, tokenTicker, fidStorageAddress) Ownable(msg.sender) {
-        // deployor of the contract is added to the allowlist
+        // Deployer of the contract is added to the allowlist
         _setAllowlist(msg.sender, true);
-        // mint total supply during deployment
+        // Mint total supply during deployment
         _mint(msg.sender, MAX_SUPPLY);
 
-        // allowlist ProxySwap addresses to enable trading
+        // Allowlist ProxySwap addresses to enable trading
         _allowlistProxySwap();
+
+        // Create a Uniswap V3 pool for this token and WETH with a 1% fee
+        IUniswapV3Factory uniswapV3Factory = IUniswapV3Factory(proxySwapFactory);
+        address pool = uniswapV3Factory.createPool(wETH, address(this), FEE_1_PERCENT);
+        // Add the created pool to the allowlist
+        _setAllowlist(pool, true);
     }
 
     /**
@@ -55,9 +78,9 @@ contract ExampleFID20Token is FID20, Ownable {
      * This includes WETH on HAM, Proxyswap Router, Factory, Position, Quoter, and Fees Contracts.
      */
     function _allowlistProxySwap() internal {
-        _setAllowlist(0x4200000000000000000000000000000000000006, true); // WETH address on Ham L3
+        _setAllowlist(proxySwapFactory, true); // Proxyswap factory Contract
+        _setAllowlist(wETH, true); // WETH address on Ham L3
         _setAllowlist(0x04f9bf41572550E4F51fD9e595446d235e733C16, true); // Proxyswap Router Contract
-        _setAllowlist(0x6bA5888ACa5CfAebdF3c9ace64581c3Aa86e564c, true); // Proxyswap factory Contract
         _setAllowlist(0xD088322Fa988225B3936555894E1D21c1A727859, true); // Proxyswap Position Contract
         _setAllowlist(0xe1ce80a0Ef61867b475048867f59306480e0aE0E, true); // Proxyswap Quoter Contract
         _setAllowlist(0x053707B201385AE3421D450A1FF272952D2D6971, true); // Proxyswap Fees Contract
