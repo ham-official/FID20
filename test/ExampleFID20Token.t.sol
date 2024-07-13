@@ -21,7 +21,7 @@ contract FRC20Test is Test {
 
     function testInitialState() view public {
         // Check deployer balance
-        assertEq(tokenContract.balanceOf(deployer), 5000 ether);
+        assertEq(tokenContract.balanceOf(deployer), 100_000_000 ether);
 
         // Check deployer is on the allowlist
         assertEq(tokenContract.isAllowlisted(deployer), true);
@@ -57,7 +57,7 @@ contract FRC20Test is Test {
         // Transfer tokens from deployer to user1
         vm.prank(deployer);
         tokenContract.transfer(user1, 1000 ether);
-        assertEq(tokenContract.balanceOf(deployer), 5000 ether - 1000 ether);
+        assertEq(tokenContract.balanceOf(deployer), 100_000_000 ether - 1000 ether);
         assertEq(tokenContract.balanceOf(user1), 1000 ether);
 
         // Transfer tokens from user1 to user2
@@ -80,7 +80,7 @@ contract FRC20Test is Test {
         // Transfer should succeed from deployer to user1
         vm.prank(deployer);
         tokenContract.transfer(user1, 1000 ether);
-        assertEq(tokenContract.balanceOf(deployer), 5000 ether - 1000 ether);
+        assertEq(tokenContract.balanceOf(deployer), 100_000_000 ether - 1000 ether);
         assertEq(tokenContract.balanceOf(user1), 1000 ether);
 
         // Attempt transfer from user1 to non-allowlisted user2
@@ -93,14 +93,14 @@ contract FRC20Test is Test {
         // Transfer tokens from deployer to user1
         vm.prank(deployer);
         tokenContract.transfer(fiduser, 1000 ether);
-        assertEq(tokenContract.balanceOf(deployer), 5000 ether - 1000 ether);
+        assertEq(tokenContract.balanceOf(deployer), 100_000_000 ether - 1000 ether);
         assertEq(tokenContract.balanceOf(fiduser), 1000 ether);
 
         // // Transfer tokens from user1 to user2
         vm.prank(fiduser);
         tokenContract.transfer(deployer, 500 ether);
         assertEq(tokenContract.balanceOf(fiduser), 500 ether);
-        assertEq(tokenContract.balanceOf(deployer), 4500 ether);
+        assertEq(tokenContract.balanceOf(deployer), 99_999_500 ether);
     }
     
 }
